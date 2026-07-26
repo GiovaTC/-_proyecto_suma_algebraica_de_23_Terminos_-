@@ -94,8 +94,84 @@ public class ConexionBD {
             System.err.println(e.getMessage());
         }
     }
+    /**
+     * Ejecuta INSERT, UPDATE o DELETE.
+     *
+     * @param sql Sentencia SQL
+     * @param parametros Parámetros del PreparedStatement
+     * @return true si fue exitoso
+     */
+    public boolean ejecutarActualizacion(
+            String sql,
+            Object... parametros
+    ) {
 
-    
+        try (PreparedStatement ps =
+                     conectar().prepareStatement(sql)) {
 
+            for (int i = 0; i < parametros.length; i++) {
 
+                ps.setObject(i + 1, parametros[i]);
+
+            }
+
+            int filas = ps.executeUpdate();
+
+            return filas > 0;
+
+        } catch (SQLException e) {
+
+            System.err.println("-------------------------------------------");
+            System.err.println("Error al ejecutar actualización.");
+            System.err.println(e.getMessage());
+            System.err.println("-------------------------------------------");
+
+            return false;
+
+        }
+    }
+    /**
+     * Ejecuta una consulta SELECT.
+     *
+     * El ResultSet debe cerrarse después de utilizarse.
+     *
+     * @param sql Consulta SQL
+     * @param parametros Parámetros
+     * @return ResultSet
+     */
+    public ResultSet ejecutarConsulta(
+            String sql,
+            Object... parametros
+    ) {
+        try {
+
+            PreparedStatement ps =
+                    conectar().prepareStatement(sql);
+
+            for (int i = 0; i < parametros.length; i++) {
+
+                ps.setObject(i + 1, parametros[i]);
+            }
+
+            return ps.executeQuery();
+
+        } catch (SQLException e) {
+
+            System.err.println("-------------------------------------------");
+            System.err.println("Error al ejecutar consulta.");
+            System.err.println(e.getMessage());
+            System.err.println("-------------------------------------------");
+
+            return null;
+        }
+    }
+
+    /**
+     * Obtiene la conexión actual.
+     *
+     * @return Connection
+     */
+    public Connection getConexion() {
+        return conexion;
+    }   
 }
